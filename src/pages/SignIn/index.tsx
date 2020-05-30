@@ -9,14 +9,21 @@ import * as Yup from 'yup';
 import Input from '../../components/input';
 import Button from '../../components/button';
 
+import {useAuth} from '../../context/AuthContext';
 import getValidationErrors from '../../utils/getValidationErrors';
+
+interface SignInFormData{
+    email: string;
+    password: string;
+}
 
 const SignIn: React.FC = () => {
 
+    const {signIn} = useAuth();
 
     const formRef = useRef<FormHandles>(null);
 
-    const handleSubmit = useCallback(async (data: object) => {
+    const handleSubmit = useCallback(async (data: SignInFormData) => {
         try {
 
             formRef.current?.setErrors({});
@@ -30,12 +37,17 @@ const SignIn: React.FC = () => {
                 abortEarly: false,
             });
 
+            signIn({
+                email: data.email,
+                password: data.password
+            });
+
         } catch (error) {
             const errors = getValidationErrors(error);
             formRef.current?.setErrors(errors);
         }
 
-    }, [])
+    }, [signIn])
 
 
 
