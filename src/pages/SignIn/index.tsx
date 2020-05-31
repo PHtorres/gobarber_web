@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react'
+import React, { useCallback, useRef } from 'react'
 import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
 import { Container, Content, Background } from './styles';
 import { Form } from '@unform/web';
@@ -9,17 +9,19 @@ import * as Yup from 'yup';
 import Input from '../../components/input';
 import Button from '../../components/button';
 
-import {useAuth} from '../../context/AuthContext';
+import { useAuth } from '../../hooks/Auth';
+import { useToast } from '../../hooks/Toast';
 import getValidationErrors from '../../utils/getValidationErrors';
 
-interface SignInFormData{
+interface SignInFormData {
     email: string;
     password: string;
 }
 
 const SignIn: React.FC = () => {
 
-    const {signIn} = useAuth();
+    const { signIn } = useAuth();
+    const { addToast } = useToast();
 
     const formRef = useRef<FormHandles>(null);
 
@@ -37,17 +39,26 @@ const SignIn: React.FC = () => {
                 abortEarly: false,
             });
 
-            signIn({
+            await signIn({
                 email: data.email,
                 password: data.password
             });
 
         } catch (error) {
-            const errors = getValidationErrors(error);
-            formRef.current?.setErrors(errors);
+
+            if (error instanceof Yup.ValidationError) {
+                const errors = getValidationErrors(error);
+                formRef.current?.setErrors(errors);
+            } else {
+                addToast({
+                    type: 'error',
+                    title: 'Erro na autenticação',
+                    description: 'Verifique e-mail e senha e tente novamente'
+                });
+            }
         }
 
-    }, [signIn])
+    }, [signIn, addToast])
 
 
 

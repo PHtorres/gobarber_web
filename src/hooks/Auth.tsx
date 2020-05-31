@@ -14,6 +14,7 @@ interface SignInCredentials {
 interface IAuthContext {
     user: object;
     signIn(credentials: SignInCredentials): Promise<void>;
+    signOut(): void;
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
@@ -32,6 +33,7 @@ export const AuthProvider: React.FC = ({ children }) => {
     });
 
     const signIn = useCallback(async ({ email, password }) => {
+        
         const response = await api.post('sessions', { email, password });
         const { token, user } = response.data;
 
@@ -42,17 +44,26 @@ export const AuthProvider: React.FC = ({ children }) => {
 
     }, []);
 
+    const signOut = useCallback(() => {
+
+        localStorage.removeItem('@GoBarber:token');
+        localStorage.removeItem('@GoBarber:user');
+
+        setData({} as AuthState);
+
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ user: data.user, signIn }}>
+        <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
             {children}
         </AuthContext.Provider>
     );
 }
 
-export const useAuth = ():IAuthContext => {
+export const useAuth = (): IAuthContext => {
     const context = useContext(AuthContext);
 
-    if(!context){
+    if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
 
