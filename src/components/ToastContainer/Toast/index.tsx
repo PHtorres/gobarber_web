@@ -5,6 +5,7 @@ import { ToastMessage, useToast } from '../../../hooks/Toast';
 
 interface ToastProps {
     message: ToastMessage;
+    style: object;
 }
 
 const icons = {
@@ -13,7 +14,7 @@ const icons = {
     info: <FiInfo size={24} />
 }
 
-const Toast: React.FC<ToastProps> = ({ message }) => {
+const Toast: React.FC<ToastProps> = ({ message, style }) => {
 
     const { removeToast } = useToast();
 
@@ -29,7 +30,7 @@ const Toast: React.FC<ToastProps> = ({ message }) => {
     }, [removeToast, message.id]);
 
     return (
-        <ToastContainer key={message.id} type={message.type} hasDescription={(!!message.description)}>
+        <ToastContainer key={message.id} type={message.type} hasDescription={(!!message.description)} style={style}>
             {icons[message.type]}
             <div>
                 <strong>{message.title}</strong>
