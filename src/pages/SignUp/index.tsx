@@ -4,7 +4,8 @@ import { Container, Content, AnimatedContainer, Background } from './styles';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import api from '../../services/api';
 
 import logoImg from '../../assets/logo.svg';
 import Input from '../../components/input';
@@ -12,11 +13,22 @@ import Button from '../../components/button';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
+import { useToast } from '../../hooks/Toast';
+
+interface SignUpFormData {
+    name: string;
+    email: string;
+    password: string;
+}
+
 const SignUp: React.FC = () => {
 
     const formRef = useRef<FormHandles>(null);
+    const { addToast } = useToast();
+    const history = useHistory();
 
-    const handleSubmit = useCallback(async (data: object) => {
+    const handleSubmit = useCallback(async (data: SignUpFormData) => {
+
         try {
 
             formRef.current?.setErrors({});
@@ -31,12 +43,33 @@ const SignUp: React.FC = () => {
                 abortEarly: false,
             });
 
+            await api.post('/users', data);
+
+            history.push('/');
+
+            addToast({
+                type: 'success',
+                title: 'Pronto!',
+                description: 'Você já pode fazer seu Logon no GoBarber'
+            });
+
         } catch (error) {
-            const errors = getValidationErrors(error);
-            formRef.current?.setErrors(errors);
+
+            if(error instanceof Yup.ValidationError){
+                const errors = getValidationErrors(error);
+                formRef.current?.setErrors(errors);
+                return;
+            }
+
+            addToast({
+                type:'error',
+                title:'Erro no cadastro',
+                description:'Tente novamente depois...'
+            });
+            
         }
 
-    }, []);
+    }, [addToast, history]);
 
     return (
         <Container>
