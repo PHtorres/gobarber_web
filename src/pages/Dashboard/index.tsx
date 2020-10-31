@@ -1,20 +1,31 @@
-import React, {useCallback} from 'react';
-import Button from '../../components/button';
-import {useAuth} from '../../hooks/Auth';
+import React, { useCallback } from 'react';
+import { useAuth } from '../../hooks/Auth';
+import { Container, Header, HeaderContent, Profile } from './styles';
+import logoImg from '../../assets/logo.svg';
+import { FiPower } from 'react-icons/fi';
 
 const Dashboard: React.FC = () => {
 
-    const {signOut} = useAuth();
-
-    const LogOut = useCallback(()=>{
-        signOut();
-    }, [signOut])
+    const { signOut, user } = useAuth();
 
     return (
-        <div>
-            <h1>Hello Dashbord</h1>
-            <Button type="button" title="Logout" onClick={LogOut}>Logout</Button>
-        </div>
+        <Container>
+            <Header>
+                <HeaderContent>
+                    <img src={logoImg} alt="GoBarber" />
+                    <Profile>
+                        <img src={user.avatar_url} alt={user.name} />
+                        <div>
+                            <span>Bem-vindo,</span>
+                            <strong>{user.name}</strong>
+                        </div>
+                    </Profile>
+                    <button type="button" onClick={signOut}>
+                        <FiPower />
+                    </button>
+                </HeaderContent>
+            </Header>
+        </Container>
     )
 }
 
