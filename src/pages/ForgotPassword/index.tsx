@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react'
-import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
+import { FiLogIn, FiMail } from 'react-icons/fi';
 import { Container, Content, AnimationContainer, Background } from './styles';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
