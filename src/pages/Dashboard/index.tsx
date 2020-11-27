@@ -20,6 +20,7 @@ import {
 import logoImg from '../../assets/logo.svg';
 import { FiClock, FiPower } from 'react-icons/fi';
 import api from '../../services/api';
+import { Link } from 'react-router-dom';
 
 interface MonthAvailabilityItem {
     day: number;
@@ -87,7 +88,7 @@ const Dashboard: React.FC = () => {
 
     const disabledDays = useMemo(() => {
         const dates = monthAvailability
-            .filter(monthDay => monthDay.available == false)
+            .filter(monthDay => monthDay.available === false)
             .map(monthDay => {
                 return new Date(currentMonth.getFullYear(), currentMonth.getMonth(), monthDay.day);
             });
@@ -124,7 +125,7 @@ const Dashboard: React.FC = () => {
                         <img src={user.avatar_url} alt={user.name} />
                         <div>
                             <span>Bem-vindo,</span>
-                            <strong>{user.name}</strong>
+                            <Link to="/profile"><strong>{user.name}</strong></Link>                         
                         </div>
                     </Profile>
                     <button type="button" onClick={signOut}>

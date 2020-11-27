@@ -7,9 +7,10 @@ import { FiAlertCircle } from 'react-icons/fi';
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     name: string;
     icon: React.ComponentType<IconBaseProps>;
+    containerStyle?:object;
 }
 
-const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
+const Input: React.FC<InputProps> = ({ name, containerStyle, icon: Icon, ...rest }) => {
 
     const inputRef = useRef<HTMLInputElement>(null);
     const { fieldName, defaultValue, error, registerField } = useField(name);
@@ -34,9 +35,10 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
     }, []);
 
     return (
-        <Container isErrored={!!error} isFocused={isFocused} isField={isField}>
+        <Container style={containerStyle} isErrored={!!error} isFocused={isFocused} isField={isField}>
             {Icon && <Icon size={20} />}
             <input
+                name={name}
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
                 defaultValue={defaultValue}

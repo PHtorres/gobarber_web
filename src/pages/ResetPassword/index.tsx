@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react'
-import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
+import { FiLock } from 'react-icons/fi';
 import { Container, Content, AnimationContainer, Background } from './styles';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
@@ -10,7 +10,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import Input from '../../components/input';
 import Button from '../../components/button';
 
-import { useAuth } from '../../hooks/Auth';
 import { useToast } from '../../hooks/Toast';
 import getValidationErrors from '../../utils/getValidationErrors';
 import api from '../../services/api';
