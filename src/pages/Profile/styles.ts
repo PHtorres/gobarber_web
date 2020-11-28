@@ -1,4 +1,4 @@
-import styled, {keyframes} from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { shade } from 'polished';
 
 export const Container = styled.div`
@@ -81,9 +81,6 @@ form {
 export const AvatarInput = styled.div`
 margin-bottom:32px;
 position:relative;
-display:flex;
-align-items:center;
-justify-content:center;
 
 img{
     width:186px;
@@ -91,7 +88,7 @@ img{
     border-radius:50%;
 }
 
-button{
+label{
     position:absolute;
     width:48px;
     height:48px;
@@ -100,6 +97,14 @@ button{
     border:0;
     bottom:0;
     left: 60%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor: pointer;
+
+    input{
+        display:none;
+    }
 
     svg{
         width:20px;

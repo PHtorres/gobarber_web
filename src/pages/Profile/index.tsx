@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'
+import React, { ChangeEvent, FormEvent, useCallback, useRef } from 'react'
 import { FiArrowLeft, FiMail, FiLock, FiUser, FiCamera } from 'react-icons/fi';
 import { Container, Content, AnimatedContainer, AvatarInput } from './styles';
 import { Form } from '@unform/web';
@@ -18,7 +18,9 @@ import { useAuth } from '../../hooks/Auth';
 interface ProfileFormData {
     name: string;
     email: string;
+    old_password:string;
     password: string;
+    password_confirmation:string;
 }
 
 const Profile: React.FC = () => {
@@ -26,7 +28,7 @@ const Profile: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const { addToast } = useToast();
     const history = useHistory();
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
 
     const handleSubmit = useCallback(async (data: ProfileFormData) => {
 
@@ -35,23 +37,48 @@ const Profile: React.FC = () => {
             formRef.current?.setErrors({});
 
             const schema = Yup.object().shape({
+
                 name: Yup.string().required('O nome é obrigatório'),
                 email: Yup.string().required('O e-mail é obrigatório').email('Digite um e-mail válido'),
-                password: Yup.string().min(6, 'Digite pelo menos 6 caracteres')
+
+                // old_password: Yup.string(),
+
+                // passsword: Yup.string().when('old_password', {
+                //     is: val => !!val.length,
+                //     then: Yup.string().required('Digite a nova senha'),
+                //     otherwise: Yup.string()
+                // }),
+
+
+                // password_confirmation:Yup.string().oneOf(
+                //     [Yup.ref('password')],
+                //     'Confirmação incorreta'
+                // ),
             });
 
             await schema.validate(data, {
                 abortEarly: false,
             });
 
-            await api.post('/users', data);
+            const formData = Object.assign({
+                name:data.name,
+                email:data.email
+            }, data.old_password? {
+                old_password:data.old_password,
+                password:data.password,
+                password_confirmation:data.password_confirmation
+            }:{});
+
+            const response = await api.put('/profile', formData);
+
+            updateUser(response.data);
 
             history.push('/');
 
             addToast({
                 type: 'success',
                 title: 'Pronto!',
-                description: 'Você já pode fazer seu Logon no GoBarber'
+                description: 'Perfil atualizado'
             });
 
         } catch (error) {
@@ -64,13 +91,26 @@ const Profile: React.FC = () => {
 
             addToast({
                 type: 'error',
-                title: 'Erro no cadastro',
+                title: 'Erro na atualização',
                 description: 'Tente novamente depois...'
             });
 
         }
 
     }, [addToast, history]);
+
+
+    const handleAvatarChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const data = new FormData();
+            data.append('avatar', e.target.files[0]);
+            api.patch('/users/avatar', data).then((response) =>{
+                updateUser(response.data);
+                addToast({type:'success', title:'Avatar atualizado!', description:''})
+            });
+        }
+    }, [addToast, updateUser]);
+
 
     return (
         <Container>
@@ -87,9 +127,10 @@ const Profile: React.FC = () => {
                     }}>
                         <AvatarInput>
                             <img src={user.avatar_url} alt={user.name} />
-                            <button type="button">
+                            <label htmlFor="avatar">
                                 <FiCamera />
-                            </button>
+                                <input type="file" id="avatar" onChange={handleAvatarChange} />
+                            </label>
                         </AvatarInput>
                         <h1>Meu perfil</h1>
                         <Input name="name" icon={FiUser} placeholder="Nome" />
